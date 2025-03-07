@@ -12,7 +12,25 @@ TAG ?= $(REPO)/minio:$(VERSION)
 GOLANGCI_DIR = .bin/golangci/$(GOLANGCI_VERSION)
 GOLANGCI = $(GOLANGCI_DIR)/golangci-lint
 
+
+
 all: build
+
+#dev: rebuild-swagger  rebuild-web build
+#dev: rebuild-web build
+dev: build
+	@MINIO_ROOT_USER="minio" \
+	MINIO_ROOT_PASSWORD="minio123" \
+	./minio server ./data \
+	--console-address ":9001" \
+	--sftp="address=:8022" \
+	--sftp="ssh-private-key=/home/ubuntu/.ssh/id_rsa"
+
+rebuild-swagger:
+	$(MAKE) -C console swagger-gen
+
+rebuild-web:
+	$(MAKE) -C console/web-app default
 
 checks: ## check dependencies
 	@echo "Checking dependencies"
