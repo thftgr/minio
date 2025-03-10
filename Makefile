@@ -18,13 +18,17 @@ all: build
 
 #dev: rebuild-swagger  rebuild-web build
 #dev: rebuild-web build
-dev: build
+minio: build
 	@MINIO_ROOT_USER="minio" \
 	MINIO_ROOT_PASSWORD="minio123" \
 	./minio server ./data \
 	--console-address ":9001" \
 	--sftp="address=:8022" \
 	--sftp="ssh-private-key=/home/ubuntu/.ssh/id_rsa"
+
+react: rebuild-web minio
+
+swagger: rebuild-swagger react
 
 rebuild-swagger:
 	$(MAKE) -C console swagger-gen
